@@ -2,14 +2,14 @@
  * @name SpotifyControls
  * @author DevilBro
  * @authorId 278543574059057154
- * @version 1.2.9
- * @description Adds a Control Panel while listening to Spotify on a connected Account
+ * @version 1.3.0
+ * @description Adds a Control Panel while listening to Spotify on a connected Account, edited version by Kiburici
  * @invite Jx3TjNS
  * @donate https://www.paypal.me/MircoWittrien
  * @patreon https://www.patreon.com/MircoWittrien
  * @website https://mwittrien.github.io/
- * @source https://github.com/mwittrien/BetterDiscordAddons/tree/master/Plugins/SpotifyControls/
- * @updateUrl https://mwittrien.github.io/BetterDiscordAddons/Plugins/SpotifyControls/SpotifyControls.plugin.js
+ * @source https://github.com/Kiburici/BetterDiscordAddons/blob/master/Plugins/SpotifyControls/
+ * @updateUrl https://raw.githubusercontent.com/Kiburici/BetterDiscordAddons/master/Plugins/SpotifyControls/SpotifyControls.plugin.js
  */
 
 module.exports = (_ => {
