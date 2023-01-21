@@ -2,7 +2,7 @@
  * @name SpotifyControls
  * @author DevilBro
  * @authorId 278543574059057154
- * @version 1.3.2
+ * @version 1.3.3
  * @description Adds a Control Panel while listening to Spotify on a connected Account, edited version by Kiburici
  * @invite Jx3TjNS
  * @donate https://www.paypal.me/MircoWittrien
@@ -129,12 +129,11 @@ module.exports = (_ => {
 				if (!lastSong) return null;
 
 				const SpotifyShareSong = BdApi.Webpack.getModule((module) => {
-  if (module.dispatchToLastSubscribed !== undefined) {
-    return module.emitter.listeners('SHAKE_APP').length > 0
-  }
-
-  return false
-}, { searchExports: true })
+  					if (module.dispatchToLastSubscribed !== undefined) {
+   					 return module.emitter.listeners('SHAKE_APP').length > 0
+ 				 }
+  				return false
+				}, { searchExports: true })
 
 				let coverSrc = BDFDB.LibraryModules.ApplicationAssetUtils.getAssetImage(lastSong.application_id, lastSong.assets.large_image);
 				let connection = (BDFDB.LibraryStores.ConnectedAccountsStore.getAccounts().find(n => n.type == "spotify") || {});
