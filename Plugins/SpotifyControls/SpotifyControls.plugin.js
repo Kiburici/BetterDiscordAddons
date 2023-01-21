@@ -2,7 +2,7 @@
  * @name SpotifyControls
  * @author DevilBro
  * @authorId 278543574059057154
- * @version 1.3.3
+ * @version 1.3.4
  * @description Adds a Control Panel while listening to Spotify on a connected Account, edited version by Kiburici
  * @invite Jx3TjNS
  * @donate https://www.paypal.me/MircoWittrien
