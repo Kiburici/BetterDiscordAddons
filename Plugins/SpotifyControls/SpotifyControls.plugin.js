@@ -2,7 +2,7 @@
  * @name SpotifyControls
  * @author DevilBro
  * @authorId 278543574059057154
- * @version 1.3.1
+ * @version 1.3.2
  * @description Adds a Control Panel while listening to Spotify on a connected Account, edited version by Kiburici
  * @invite Jx3TjNS
  * @donate https://www.paypal.me/MircoWittrien
@@ -14,7 +14,7 @@
 
 module.exports = (_ => {
 	const changeLog = {
-		
+
 	};
 
 	return !window.BDFDB_Global || (!window.BDFDB_Global.loaded && !window.BDFDB_Global.started) ? class {
@@ -23,14 +23,14 @@ module.exports = (_ => {
 		getAuthor () {return this.author;}
 		getVersion () {return this.version;}
 		getDescription () {return `The Library Plugin needed for ${this.name} is missing. Open the Plugin Settings to download it. \n\n${this.description}`;}
-		
+
 		downloadLibrary () {
 			require("request").get("https://mwittrien.github.io/BetterDiscordAddons/Library/0BDFDB.plugin.js", (e, r, b) => {
 				if (!e && b && r.statusCode == 200) require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0BDFDB.plugin.js"), b, _ => BdApi.showToast("Finished downloading BDFDB Library", {type: "success"}));
 				else BdApi.alert("Error", "Could not download BDFDB Library Plugin. Try again later or download it manually from GitHub: https://mwittrien.github.io/downloader/?library");
 			});
 		}
-		
+
 		load () {
 			if (!window.BDFDB_Global || !Array.isArray(window.BDFDB_Global.pluginQueue)) window.BDFDB_Global = Object.assign({}, window.BDFDB_Global, {pluginQueue: []});
 			if (!window.BDFDB_Global.downloadModal) {
@@ -61,13 +61,13 @@ module.exports = (_ => {
 		var starting, lastSong, showActivity, currentVolume, lastVolume, stopTime, previousIsClicked, previousDoubleTimeout;
 		var timelineTimeout, timelineDragging, updateInterval;
 		var playbackState = {};
-		
+
 		const repeatStates = [
 			"off",
 			"context",
 			"track"
 		];
-	
+
 		const SpotifyControlsComponent = class SpotifyControls extends BdApi.React.Component {
 			componentDidMount() {
 				controls = this;
@@ -84,8 +84,8 @@ module.exports = (_ => {
 							type = "";
 							method = "get";
 							break;
-					};		
-					BDFDB.LibraryRequires.request(`https://api.spotify.com/v1/me/player${type ? "/" + type : ""}`, {method: method, form: Object.assign({device_id: device.id}, data), headers: {authorization: `Bearer ${socket.accessToken}`}}, (error, response, result) => {	  
+					};
+					BDFDB.LibraryRequires.request(`https://api.spotify.com/v1/me/player${type ? "/" + type : ""}`, {method: method, form: Object.assign({device_id: device.id}, data), headers: {authorization: `Bearer ${socket.accessToken}`}}, (error, response, result) => {
 						if (response && response.statusCode == 401) {
 							BDFDB.LibraryModules.SpotifyUtils.getAccessToken(socket.accountId).then(promiseResult => {
 								let newSocketDevice = BDFDB.LibraryStores.SpotifyStore.getActiveSocketAndDevice();
@@ -108,7 +108,7 @@ module.exports = (_ => {
 					});
 				});
 			}
-			render() {			   
+			render() {
 				let socketDevice = BDFDB.LibraryStores.SpotifyStore.getActiveSocketAndDevice();
 				if (this.props.song) this.props.noDevice = false;
 				if (!socketDevice || this.props.noDevice) return null;
@@ -127,7 +127,15 @@ module.exports = (_ => {
 					stopTime = new Date();
 				}
 				if (!lastSong) return null;
-				
+
+				const SpotifyShareSong = BdApi.Webpack.getModule((module) => {
+  if (module.dispatchToLastSubscribed !== undefined) {
+    return module.emitter.listeners('SHAKE_APP').length > 0
+  }
+
+  return false
+}, { searchExports: true })
+
 				let coverSrc = BDFDB.LibraryModules.ApplicationAssetUtils.getAssetImage(lastSong.application_id, lastSong.assets.large_image);
 				let connection = (BDFDB.LibraryStores.ConnectedAccountsStore.getAccounts().find(n => n.type == "spotify") || {});
 				showActivity = showActivity != undefined ? showActivity : (connection.show_activity || connection.showActivity);
@@ -213,7 +221,7 @@ module.exports = (_ => {
 												onClick: _ => {
 													let url = BDFDB.ObjectUtils.get(playbackState, "item.external_urls.spotify") || BDFDB.ObjectUtils.get(playbackState, "context.external_urls.spotify");
 													if (url) {
-														//BDFDB.LibraryModules.WindowUtils.copy(url);
+														BDFDB.LibraryModules.WindowUtils.copy(url);
 														SpotifyShareSong.dispatch('INSERT_TEXT',{ plainText: url })
 														BDFDB.NotificationUtils.toast(_this.labels.toast_copyurl_success, {type: "success"});
 													}
@@ -431,11 +439,11 @@ module.exports = (_ => {
 				});
 			}
 		};
-	
+
 		return class SpotifyControls extends Plugin {
 			onLoad () {
 				_this = this;
-				
+
 				this.defaults = {
 					general: {
 						addBy: 				{value: true,		description: "Adds the Word 'by' infront of the Author Name"},
@@ -453,13 +461,13 @@ module.exports = (_ => {
 						volume: 			{value: {small: false, big: true},		icons: ["", "", "", ""],		description: "Volume"}
 					}
 				};
-				
+
 				this.modulePatches = {
 					after: [
 						"ChannelSidebar"
 					]
 				};
-				
+
 				this.css = `
 					@font-face {
 						font-family: glue1-spoticon;
@@ -669,7 +677,7 @@ module.exports = (_ => {
 					}
 				`;
 			}
-			
+
 			onStart () {
 				BDFDB.PatchUtils.patch(this, BDFDB.LibraryStores.SpotifyStore, "getActivity", {after: e => {
 					if (e.methodArguments[0] !== false) {
@@ -685,21 +693,21 @@ module.exports = (_ => {
 				BDFDB.PatchUtils.patch(this, BDFDB.LibraryModules.SpotifyUtils, "pause", {instead: e => {
 					return false;
 				}});
-				
+
 				BDFDB.DiscordUtils.rerenderAll();
 			}
-			
+
 			onStop () {
 				BDFDB.DiscordUtils.rerenderAll();
 			}
 
-			getSettingsPanel (collapseStates = {}) {				
+			getSettingsPanel (collapseStates = {}) {
 				let settingsPanel;
 				return settingsPanel = BDFDB.PluginUtils.createSettingsPanel(this, {
 					collapseStates: collapseStates,
 					children: _ => {
 						let settingsItems = [];
-						
+
 						if (!BDFDB.LibraryStores.SpotifyStore.hasConnectedAccount()) BDFDB.ModalUtils.open(this, {
 							size: "SMALL",
 							header: `${this.name}: ${this.labels.noaccount_header}...`,
@@ -712,7 +720,7 @@ module.exports = (_ => {
 								onClick: _ => BDFDB.LibraryModules.UserSettingsUtils.open(BDFDB.DiscordConstants.UserSettingsSections.CONNECTIONS)
 							}]
 						});
-						
+
 						settingsItems.push(BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.CollapseContainer, {
 							title: "Settings",
 							collapseStates: collapseStates,
@@ -724,7 +732,7 @@ module.exports = (_ => {
 								value: this.settings.general[key]
 							}))
 						}));
-						
+
 						settingsItems.push(BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.CollapseContainer, {
 							title: "Button Settings",
 							collapseStates: collapseStates,
@@ -766,7 +774,7 @@ module.exports = (_ => {
 								}
 							}))
 						}));
-						
+
 						return settingsItems;
 					}
 				});
@@ -790,7 +798,7 @@ module.exports = (_ => {
 					activityToggle: this.settings.general.addActivityButton
 				}, true));
 			}
-			
+
 			updatePlayer (song) {
 				if (controls) {
 					controls.props.song = song;
