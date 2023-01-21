@@ -220,7 +220,7 @@ module.exports = (_ => {
 												onClick: _ => {
 													let url = BDFDB.ObjectUtils.get(playbackState, "item.external_urls.spotify") || BDFDB.ObjectUtils.get(playbackState, "context.external_urls.spotify");
 													if (url) {
-														BDFDB.LibraryModules.WindowUtils.copy(url);
+														//BDFDB.LibraryModules.WindowUtils.copy(url);
 														SpotifyShareSong.dispatch('INSERT_TEXT',{ plainText: url })
 														BDFDB.NotificationUtils.toast(_this.labels.toast_copyurl_success, {type: "success"});
 													}
